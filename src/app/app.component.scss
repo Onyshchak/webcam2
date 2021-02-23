@@ -1,0 +1,7 @@
+.canvas-list {
+  display: flex;
+
+  > canvas {
+    cursor: pointer;
+  }
+}
