@@ -1,17 +1,36 @@
-<video id="video" #video width="640" height="480" [style.display]="this.selectedBackground ? 'none' : 'block'"></video>
-<div [style.display]="!this.selectedBackground ? 'none' : 'block'" [style.backgroundImage]="'url(' + selectedBackground + ''" [style.width]="'640px'">
-  <canvas [style.display]="showTestCanvas ? 'none' : 'block'" id="canvasPerson" width="640" height="480"></canvas>
-  <canvas [style.display]="!showTestCanvas ? 'none' : 'block'" id="testCanvas" width="640" height="480"></canvas>
+<div class="webcam">
+  <video id="video" #video [style.display]="this.selectedBackground ? 'none' : 'block'"></video>
+
+  <div
+    class="webcam_canvas-transparent"
+    [style.display]="!this.selectedBackground ? 'none' : 'block'"
+    [style.backgroundImage]="'url(' + selectedBackground + ')'"
+  >
+    <canvas [style.display]="showTestCanvas ? 'none' : 'block'" id="canvasPerson" width="640" height="480"></canvas>
+    <canvas [style.display]="!showTestCanvas ? 'none' : 'block'" id="testCanvas" width="640" height="480"></canvas>
+  </div>
+  <div class="webcam_backgrounds">
+    <img
+      *ngFor="let src of imageBackgrounds"
+      (click)="setBackground(src)"
+      [src]="src"
+      alt="background"
+    >
+  </div>
+
+  <footer class="webcam_controls">
+    <button *ngIf="selectedBackground && !showTestCanvas" (click)="shot()" class="btn">
+      <span>Shot</span>
+    </button>
+    <button *ngIf="showTestCanvas" (click)="save()" class="btn">
+      <span>Save</span>
+    </button>
+    <button *ngIf="showTestCanvas" (click)="change()" class="btn">
+      <span>Change</span>
+    </button>
+  </footer>
+
+  <div *ngIf="loading" class="loading">
+    <div class="loader"></div>
+  </div>
 </div>
-<div>
-  <img *ngFor="let src of imageBackgrounds" (click)="selectedBackground = src" [src]="src" style="width: 213px; height: 160px; cursor: pointer">
-</div>
-<button *ngIf="selectedBackground" (click)="shot()">Shot</button>
-<button *ngIf="showTestCanvas" (click)="save()">Save</button>
-<button (click)="change()">Change</button>
-<!--<div>-->
-<!--&lt;!&ndash;  <app-camera (pictureTaken)="handleImage($event)"></app-camera>&ndash;&gt;-->
-<!--  <div class="canvas-list">-->
-<!--    <canvas *ngFor="let item of imageBackgrounds" [id]="item.id" width="640" height="480" (click)="download(item.id)"></canvas>-->
-<!--  </div>-->
-<!--</div>-->
