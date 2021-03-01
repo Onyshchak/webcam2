@@ -153,10 +153,19 @@ export class AppComponent implements OnInit, AfterViewInit {
       ctx.putImageData(backgroundDarkeningMask, 0, 0);
       // composite the frame
       ctx.globalCompositeOperation = 'source-in';
-      createImageBitmap(this.video.nativeElement).then(imgBitmap => ctx.drawImage(imgBitmap, 0, 0));
-      this.imgData = ctx.getImageData(0, 0, 640, 480);
+      createImageBitmap(this.video.nativeElement).then(imgBitmap => {
+        ctx.drawImage(imgBitmap, 0, 0);
+        this.imgData = ctx.getImageData(0, 0, 640, 480);
+        ctx.putImageData(this.imgData, 0, 0);
+        const background = new Image();
+        background.src = this.selectedBackground;
+        background.onload = () => {
+          ctx.globalCompositeOperation = 'destination-over';
+          ctx.drawImage(background, 0, 0);
+        };
+      });
     }
-    ctx.putImageData(this.imgData);
+    ctx.putImageData(this.imgData, 0, 0);
     const background = new Image();
     background.src = this.selectedBackground;
     background.onload = () => {
