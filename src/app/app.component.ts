@@ -30,7 +30,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   showTestCanvas: boolean;
   loading: boolean;
   backgroundDarkeningMask = null;
-  nativeElement = null;
+  imgData;
 
   constructor() { }
 
@@ -99,7 +99,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   shot(): void {
     this.loading = true;
-    this.nativeElement = this.video.nativeElement;
     this.loadImage().then(r => {
       this.showTestCanvas = true;
       this.loading = false;
@@ -115,6 +114,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   change(): void {
     this.showTestCanvas = false;
+    this.imgData = null;
     // this.backgroundDarkeningMask
   }
 
@@ -126,7 +126,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       quantBytes: 1,
     });
 
-    const segmentation = await net.segmentPerson(this.nativeElement, {
+    const segmentation = await net.segmentPerson(this.video.nativeElement, {
       flipHorizontal: true,
       internalResolution: 'full',
       segmentationThreshold: 0.5,
@@ -148,11 +148,15 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     const ctx = this.testCanvas.getContext('2d');
     // composite the segmentation mask on top
-    ctx.globalCompositeOperation = 'destination-over';
-    ctx.putImageData(backgroundDarkeningMask, 0, 0);
-    // composite the frame
-    ctx.globalCompositeOperation = 'source-in';
-    createImageBitmap(this.nativeElement).then(imgBitmap => ctx.drawImage(imgBitmap, 0, 0));
+    if (!this.imgData) {
+      ctx.globalCompositeOperation = 'destination-over';
+      ctx.putImageData(backgroundDarkeningMask, 0, 0);
+      // composite the frame
+      ctx.globalCompositeOperation = 'source-in';
+      createImageBitmap(this.video.nativeElement).then(imgBitmap => ctx.drawImage(imgBitmap, 0, 0));
+      this.imgData = ctx.getImageData(0, 0, 640, 480);
+    }
+    ctx.putImageData(this.imgData);
     const background = new Image();
     background.src = this.selectedBackground;
     background.onload = () => {

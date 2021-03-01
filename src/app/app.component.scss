@@ -1,23 +1,30 @@
 .webcam {
-  width: 640px;
+  max-width: 800px;
   margin: auto;
 
-  #video {
-    height: 480px;
-    width: 640px;
+  section > * {
+    width: 100%;
+
+    canvas {
+      height: auto;
+      width: 100%;
+    }
   }
 
   &_canvas-transparent {
     position: relative;
-    height: 480px;
-    width: 640px;
+    background-size: cover;
   }
 
   &_backgrounds {
     display: flex;
-    height: 160px;
-    width: 100%;
-    cursor: pointer
+    cursor: pointer;
+
+    > img {
+      flex-basis:100%;
+      overflow: hidden;
+      height: auto;
+    }
   }
 
   &_controls {

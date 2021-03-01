@@ -1,14 +1,18 @@
 <div class="webcam">
-  <video id="video" #video [style.display]="this.selectedBackground ? 'none' : 'block'"></video>
+  <section>
+    <video id="video" #video [style.display]="this.selectedBackground ? 'none' : 'block'"></video>
 
-  <div
-    class="webcam_canvas-transparent"
-    [style.display]="!this.selectedBackground ? 'none' : 'block'"
-    [style.backgroundImage]="'url(' + selectedBackground + ')'"
-  >
-    <canvas [style.display]="showTestCanvas ? 'none' : 'block'" id="canvasPerson" width="640" height="480"></canvas>
-    <canvas [style.display]="!showTestCanvas ? 'none' : 'block'" id="testCanvas" width="640" height="480"></canvas>
-  </div>
+    <div
+      class="webcam_canvas-transparent"
+      [style.display]="!this.selectedBackground ? 'none' : 'block'"
+      [style.backgroundImage]="'url(' + selectedBackground + ')'"
+    >
+      <canvas [style.display]="showTestCanvas ? 'none' : 'block'" id="canvasPerson" width="640" height="480"></canvas>
+      <canvas [style.display]="!showTestCanvas ? 'none' : 'block'" id="testCanvas" width="640" height="480"></canvas>
+      <canvas [style.display]="'none'" id="forImageState" width="640" height="480"></canvas>
+    </div>
+  </section>
+
   <div class="webcam_backgrounds">
     <img
       *ngFor="let src of imageBackgrounds"
