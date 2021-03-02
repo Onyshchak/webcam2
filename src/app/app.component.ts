@@ -98,6 +98,9 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   shot(): void {
+    const ctx = this.testCanvas.getContext('2d');
+    ctx.drawImage(this.video.nativeElement, 0, 0);
+    this.imgData = ctx.getImageData(0, 0, 640, 480);
     this.loading = true;
     this.loadImage().then(r => {
       this.showTestCanvas = true;
@@ -115,7 +118,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   change(): void {
     this.showTestCanvas = false;
     this.imgData = null;
-    // this.backgroundDarkeningMask
+    const ctx = this.testCanvas.getContext('2d');
+    ctx.clearRect(0, 0, 640, 480);
   }
 
   async loadImage(): Promise<any> {
@@ -126,7 +130,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       quantBytes: 1,
     });
 
-    const segmentation = await net.segmentPerson(this.video.nativeElement, {
+    const segmentation = await net.segmentPerson(this.imgData, {
       flipHorizontal: true,
       internalResolution: 'full',
       segmentationThreshold: 0.5,
@@ -148,30 +152,21 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     const ctx = this.testCanvas.getContext('2d');
     // composite the segmentation mask on top
-    if (!this.imgData) {
-      ctx.globalCompositeOperation = 'destination-over';
-      ctx.putImageData(backgroundDarkeningMask, 0, 0);
-      // composite the frame
-      ctx.globalCompositeOperation = 'source-in';
-      createImageBitmap(this.video.nativeElement).then(imgBitmap => {
-        ctx.drawImage(imgBitmap, 0, 0);
-        this.imgData = ctx.getImageData(0, 0, 640, 480);
-        ctx.putImageData(this.imgData, 0, 0);
-        const background = new Image();
-        background.src = this.selectedBackground;
-        background.onload = () => {
-          ctx.globalCompositeOperation = 'destination-over';
-          ctx.drawImage(background, 0, 0);
-        };
-      });
-    }
-    ctx.putImageData(this.imgData, 0, 0);
-    const background = new Image();
-    background.src = this.selectedBackground;
-    background.onload = () => {
-      ctx.globalCompositeOperation = 'destination-over';
-      ctx.drawImage(background, 0, 0);
-    };
+    ctx.globalCompositeOperation = 'destination-over';
+    ctx.putImageData(backgroundDarkeningMask, 0, 0);
+    // composite the frame
+    ctx.globalCompositeOperation = 'source-in';
+    createImageBitmap(this.imgData).then(imgBitmap => {
+      ctx.drawImage(imgBitmap, 0, 0);
+      this.imgData = ctx.getImageData(0, 0, 640, 480);
+      ctx.putImageData(this.imgData, 0, 0);
+      const background = new Image();
+      background.src = this.selectedBackground;
+      background.onload = () => {
+        ctx.globalCompositeOperation = 'destination-over';
+        ctx.drawImage(background, 0, 0);
+      };
+    });
   }
 
   setBackground(url: string): void {
