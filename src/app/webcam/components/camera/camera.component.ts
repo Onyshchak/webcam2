@@ -180,7 +180,7 @@ export class CameraComponent implements OnInit, AfterViewInit {
       background.src = this.selectedBackground;
       background.onload = () => {
         ctx.globalCompositeOperation = 'destination-over';
-        ctx.filter = 'blur(2px)';
+        // ctx.filter = 'blur(2px)';
         ctx.drawImage(background, 0, 0);
       };
     });
