@@ -43,8 +43,8 @@ export class CameraComponent implements OnInit, AfterViewInit {
   }
 
   resizeContent(): void {
-    const height = this.camera.nativeElement.innerHeight;
-    const width = this.camera.nativeElement.innerWidth;
+    const height = this.camera.nativeElement.offsetHeight;
+    const width = this.camera.nativeElement.offsetWidth;
     if (width / height < 1.777777777777778) {
       this.renderer.setStyle(this.content.nativeElement, 'width', 'inherit');
       this.renderer.setStyle(this.content.nativeElement, 'height', 'inherit');
