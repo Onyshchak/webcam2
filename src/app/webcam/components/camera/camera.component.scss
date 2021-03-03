@@ -1,36 +1,45 @@
-.webcam {
-  max-width: 800px;
-  margin: auto;
+.camera {
+  height: 100vh;
+  max-height: 100vh;
+  max-width: 100vw;
+  overflow: hidden;
+  position: relative;
 
-  section > * {
-    width: 100%;
-
-    canvas {
-      height: auto;
-      width: 100%;
-    }
-  }
-
-  &_canvas-transparent {
-    position: relative;
-    background-size: cover;
-  }
-
-  &_backgrounds {
-    display: flex;
-    cursor: pointer;
-
-    > img {
-      flex-basis:100%;
-      overflow: hidden;
-      height: auto;
-    }
-  }
-
-  &_controls {
+  &_content {
     display: flex;
     justify-content: center;
-    width: 100%;
+    max-height: inherit;
+    margin: auto;
+
+    > section {
+      width: 75%;
+
+      > video,
+      > canvas {
+        width: 100%;
+      }
+
+      .camera_background {
+        background-size: cover;
+      }
+    }
+
+    > aside {
+      display: flex;
+      flex-direction: column;
+      width: 25%;
+
+      > * {
+        cursor: pointer;
+      }
+    }
+  }
+
+  > footer {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50% );
 
     .btn {
       width: 150px;
@@ -102,8 +111,4 @@
       font-weight: bold;
     }
   }
-}
-
-body {
-  margin: 0!important;
 }

@@ -1,0 +1,33 @@
+<div class="camera" #camera>
+  <div class="camera_content" #content>
+    <section>
+      <video id="video" #video [style.display]="this.selectedBackground ? 'none' : 'block'"></video>
+      <canvas [style.backgroundImage]="'url(' + selectedBackground + ')'" [style.display]="showTestCanvas ? 'none' : 'block'" id="canvasPerson" width="640" height="480"></canvas>
+      <canvas [style.display]="!showTestCanvas ? 'none' : 'block'" id="testCanvas" width="640" height="480"></canvas>
+    </section>
+    <aside>
+      <img
+        *ngFor="let src of imageBackgrounds"
+        (click)="setBackground(src)"
+        [src]="src"
+        alt="background"
+      >
+    </aside>
+  </div>
+
+  <footer class="webcam_controls">
+    <button *ngIf="selectedBackground && !showTestCanvas" (click)="shot()" class="btn">
+      <span>Shot</span>
+    </button>
+    <button *ngIf="showTestCanvas" (click)="save()" class="btn">
+      <span>Save</span>
+    </button>
+    <button *ngIf="showTestCanvas" (click)="change()" class="btn">
+      <span>Change</span>
+    </button>
+  </footer>
+
+  <div *ngIf="loading" class="loading">
+    <div class="loader"></div>
+  </div>
+</div>
