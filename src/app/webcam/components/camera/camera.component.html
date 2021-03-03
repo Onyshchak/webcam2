@@ -4,11 +4,11 @@
       <video id="video"
              #video [style.display]="this.selectedBackground ? 'none' : 'block'"></video>
       <canvas [style.backgroundImage]="'url(' + selectedBackground + ')'"
-              [style.display]="showTestCanvas ? 'none' : 'block'"
+              [style.display]="showResult ? 'none' : 'block'"
               class="camera_background"
               id="canvasPerson" width="640" height="480"></canvas>
-      <canvas [style.display]="!showTestCanvas ? 'none' : 'block'"
-              id="testCanvas" width="640" height="480"></canvas>
+      <canvas [style.display]="!showResult ? 'none' : 'block'"
+              id="canvasResult" width="640" height="480"></canvas>
     </section>
     <aside>
       <img
@@ -21,13 +21,13 @@
   </div>
 
   <footer class="webcam_controls">
-    <button *ngIf="selectedBackground && !showTestCanvas" (click)="shot()" class="btn">
+    <button *ngIf="selectedBackground && !showResult" (click)="shot()" class="btn">
       <span>Shot</span>
     </button>
-    <button *ngIf="showTestCanvas" (click)="save()" class="btn">
+    <button *ngIf="showResult" (click)="save()" class="btn">
       <span>Save</span>
     </button>
-    <button *ngIf="showTestCanvas" (click)="change()" class="btn">
+    <button *ngIf="showResult" (click)="change()" class="btn">
       <span>Change</span>
     </button>
   </footer>

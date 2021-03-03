@@ -26,8 +26,8 @@ export class CameraComponent implements OnInit, AfterViewInit {
   private stream: MediaStream = null;
   canvasPerson;
   contextPerson;
-  testCanvas;
-  showTestCanvas: boolean;
+  canvasResult;
+  showResult: boolean;
   loading: boolean;
   backgroundDarkeningMask = null;
   imgData;
@@ -58,7 +58,7 @@ export class CameraComponent implements OnInit, AfterViewInit {
     this.initVideo(null).then((r) => console.log(r));
 
     this.canvasPerson = document.getElementById('canvasPerson');
-    this.testCanvas = document.getElementById('testCanvas');
+    this.canvasResult = document.getElementById('canvasResult');
     this.contextPerson = this.canvasPerson.getContext('2d');
 
     this.resizeContent();
@@ -114,12 +114,12 @@ export class CameraComponent implements OnInit, AfterViewInit {
   }
 
   shot(): void {
-    const ctx = this.testCanvas.getContext('2d');
+    const ctx = this.canvasResult.getContext('2d');
     ctx.drawImage(this.video.nativeElement, 0, 0);
     this.imgData = ctx.getImageData(0, 0, 640, 480);
     this.loading = true;
     this.loadImage().then(r => {
-      this.showTestCanvas = true;
+      this.showResult = true;
       this.loading = false;
     });
   }
@@ -127,14 +127,14 @@ export class CameraComponent implements OnInit, AfterViewInit {
   save(): void {
     const link = document.createElement('a');
     link.download = 'filename.png';
-    link.href = this.testCanvas.toDataURL();
+    link.href = this.canvasResult.toDataURL();
     link.click();
   }
 
   change(): void {
-    this.showTestCanvas = false;
+    this.showResult = false;
     this.imgData = null;
-    const ctx = this.testCanvas.getContext('2d');
+    const ctx = this.canvasResult.getContext('2d');
     ctx.clearRect(0, 0, 640, 480);
   }
 
@@ -166,7 +166,7 @@ export class CameraComponent implements OnInit, AfterViewInit {
   async composite(backgroundDarkeningMask): Promise<void> {
     if (!backgroundDarkeningMask) { return; }
 
-    const ctx = this.testCanvas.getContext('2d');
+    const ctx = this.canvasResult.getContext('2d');
     // composite the segmentation mask on top
     ctx.globalCompositeOperation = 'destination-over';
     ctx.putImageData(backgroundDarkeningMask, 0, 0);
@@ -188,7 +188,7 @@ export class CameraComponent implements OnInit, AfterViewInit {
 
   setBackground(url: string): void {
     this.selectedBackground = url;
-    if (this.showTestCanvas) {
+    if (this.showResult) {
       this.composite(this.backgroundDarkeningMask).then(res => console.log(res));
     }
   }
