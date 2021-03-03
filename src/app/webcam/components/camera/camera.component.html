@@ -1,7 +1,7 @@
 <div class="camera" #camera>
   <div class="camera_content" #content>
     <section>
-      <video id="video"
+      <video id="video" autoplay loop muted playsinline
              #video [style.display]="this.selectedBackground ? 'none' : 'block'"></video>
       <canvas [style.backgroundImage]="'url(' + selectedBackground + ')'"
               [style.display]="showResult ? 'none' : 'block'"
