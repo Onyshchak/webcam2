@@ -1,17 +1,19 @@
-import {AfterViewInit, Component, ElementRef, HostListener, OnInit, Renderer2, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
 
 import * as bodyPix from '@tensorflow-models/body-pix';
 import '@tensorflow/tfjs-backend-cpu';
 import '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-converter';
 import '@tensorflow/tfjs-backend-webgl';
+import { interval, ReplaySubject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-camera',
   templateUrl: './camera.component.html',
   styleUrls: ['./camera.component.scss']
 })
-export class CameraComponent implements OnInit, AfterViewInit {
+export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
   bodyPix = require('@tensorflow-models/body-pix');
   imageBackgrounds: any[] = ['assets/img/windows.png', 'assets/img/ice.png', 'assets/img/summer.png'];
   selectedBackground: string;
@@ -31,6 +33,7 @@ export class CameraComponent implements OnInit, AfterViewInit {
   loading: boolean;
   backgroundDarkeningMask = null;
   imgData;
+  private untilDestroy: ReplaySubject<boolean> = new ReplaySubject(1);
   @HostListener('window:resize', ['$event']) onResize(event): void {
     this.resizeContent();
   }
@@ -40,6 +43,21 @@ export class CameraComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit(): void {
+  }
+
+  ngAfterViewInit(): void {
+    this.initVideo(null).then((r) => console.log(r));
+
+    this.canvasPerson = document.getElementById('canvasPerson');
+    this.canvasResult = document.getElementById('canvasResult');
+    this.contextPerson = this.canvasPerson.getContext('2d');
+
+    this.resizeContent();
+  }
+
+  ngOnDestroy(): void {
+    this.untilDestroy.next(true);
+    this.untilDestroy.complete();
   }
 
   resizeContent(): void {
@@ -54,16 +72,6 @@ export class CameraComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngAfterViewInit(): void {
-    this.initVideo(null).then((r) => console.log(r));
-
-    this.canvasPerson = document.getElementById('canvasPerson');
-    this.canvasResult = document.getElementById('canvasResult');
-    this.contextPerson = this.canvasPerson.getContext('2d');
-
-    this.resizeContent();
-  }
-
   async initVideo(e): Promise<any> {
     this.getMediaStream()
       .then(async (stream) => {
@@ -75,7 +83,10 @@ export class CameraComponent implements OnInit, AfterViewInit {
           multiplier: 0.75,
           quantBytes: 2
         });
-        setInterval(async () => {
+        const intervalObs = interval(100);
+        intervalObs.pipe(
+          takeUntil(this.untilDestroy)
+        ).subscribe(async () => {
           if (this.selectedBackground) {
             const segmentation = await net.segmentPerson(this.video.nativeElement, {
               flipHorizontal: false,
@@ -90,7 +101,7 @@ export class CameraComponent implements OnInit, AfterViewInit {
             this.contextPerson.globalCompositeOperation = 'source-in';
             createImageBitmap(this.video.nativeElement).then(imgBitmap => this.contextPerson.drawImage(imgBitmap, 0, 0));
           }
-        }, 100);
+        });
       });
   }
   private getMediaStream(): Promise<MediaStream> {
